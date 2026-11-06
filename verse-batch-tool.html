@@ -20,6 +20,17 @@
   body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Segoe UI",Tahoma,"Noto Sans Arabic",sans-serif;line-height:1.5}
   button,input,select,textarea{font:inherit;color:inherit}
   header.top{padding:22px 20px 8px;max-width:1400px;margin:auto;display:flex;align-items:center;gap:16px}
+  a.dl{margin-inline-start:10px;display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--gold2);border-radius:10px;color:var(--gold);text-decoration:none;font-size:13px;white-space:nowrap;background:#121214}
+  a.dl[hidden]{display:none}
+  .rate{margin-inline-start:auto;display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--gold2);border-radius:10px;color:var(--gold);font-size:13px;white-space:nowrap;background:#121214;cursor:pointer}
+  .rate:hover{background:var(--gold);color:#1b1405}
+  .stars{display:flex;gap:6px;justify-content:center;margin:6px 0 12px;direction:ltr}
+  .stars button{background:none;border:0;font-size:36px;line-height:1;cursor:pointer;color:#444;padding:0 2px}
+  .stars button.on{color:var(--gold)}
+  #rateNote{width:100%;resize:vertical;margin-bottom:8px}
+  #rateMsg{min-height:20px;margin:0 0 10px;font-size:13px;color:var(--mut)}
+  a.dl:hover{background:var(--gold);color:#1b1405}
+  @media (max-width:600px){a.dl{display:none}}
   header.top .logo{height:68px;width:auto;flex:none;filter:drop-shadow(0 4px 14px rgba(232,193,90,.25))}
   header.top h1{margin:0;font-size:24px;letter-spacing:.2px}
   header.top h1 span{color:var(--gold)}
@@ -90,10 +101,19 @@
   .edit textarea.ar{font-size:22px;direction:rtl}
   .edit textarea.en{direction:ltr;font-size:14px}
   .note{color:var(--mut);font-size:12px;margin:14px 4px 0}
+  .pickbar{display:flex;gap:6px;margin:8px 0}
+  .btn.sm{padding:6px 12px;font-size:12px}
+  .pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;max-height:216px;overflow:auto;padding:2px}
+  .pk{height:34px;border:1px solid var(--line2);background:#0d0d0f;border-radius:8px;color:var(--ink);font-size:12px;cursor:pointer;user-select:none;-webkit-user-select:none;padding:0}
+  .pk:hover{border-color:var(--gold2)}
+  .pk.on{background:var(--gold);color:#1b1405;border-color:var(--gold);font-weight:700}
   .chips{display:flex;flex-wrap:wrap;gap:6px;direction:rtl}
   .chips button{border:1px solid var(--line2);background:#1a1a1f;border-radius:8px;padding:3px 10px;font-size:18px;cursor:pointer;color:var(--gold)}
   .chips button.off{opacity:.35;text-decoration:line-through}
   .hint{font-size:12px;color:var(--mut);margin:6px 0 0}
+  .f small{font-size:11.5px;color:#7d7d88;line-height:1.55;font-weight:400}
+  .vgrid{display:grid;gap:14px;margin-top:12px}
+  .chk small{display:block;font-size:11.5px;color:#7d7d88;line-height:1.5}
   .card-head{cursor:pointer;user-select:none;-webkit-user-select:none}
   .card-head button{cursor:pointer}
   .pick{width:24px;height:24px;border:2px solid var(--line2);border-radius:7px;display:inline-grid;place-items:center;font-size:15px;font-weight:700;color:#1b1405;flex:none}
@@ -120,6 +140,8 @@
   <h1>استوديو <span>صور الآيات</span></h1>
   <p>اعرض كل آية على حدة، نزّلها وحدها أو نزّل السورة كلها دفعة واحدة. صور PNG شفافة.</p>
   </div>
+  <button class="rate" id="rateBtn" type="button">⭐ قيّم الأداة</button>
+  <a class="dl" id="dlLink" href="#" download>⬇ تنزيل نسخة ويندوز</a>
 </header>
 
 <div class="layout">
@@ -265,20 +287,78 @@
         </label>
         <label class="f">الجودة (0.5–1) <input type="number" id="quality" min="0.5" max="1" step="0.05" value="0.92"></label>
       </div>
-      <div id="selInfo"></div>
-      <div class="row" style="margin-bottom:6px">
-        <button class="btn" id="selAll">تحديد الكل</button>
-        <button class="btn" id="selNone">إلغاء التحديد</button>
-      </div>
-      <p class="hint" style="margin:0 0 12px">حدّد بالفأرة: اضغط على شريط الآية أو اسحب فوق عدة آيات. اضغط Shift لتحديد مدى كامل. إن لم تحدد شيئًا فتُعتمد كل الآيات.</p>
       <button class="btn primary block" id="zipBtn">تحميل المحدد (zip)</button>
       <button class="btn block" id="mergeBtn" style="margin-top:8px">دمج المحدد في صورة واحدة</button>
-      <div class="grid2" style="margin-top:12px">
-        <label class="f">ثواني لكل آية <input type="number" id="vdur" min="1" max="30" value="4"></label>
-        <div style="display:grid;align-items:end"><button class="btn" id="vidBtn">تصدير فيديو</button></div>
-      </div>
-      <p class="hint">فيديو WebM للآيات المحددة بمقاس القالب (الافتراضي 1080‎×‎1920) مع تلاشي بين الآيات. يُسجَّل بزمن حقيقي، فأبقِ التبويب ظاهرًا أثناء التسجيل. JPG بلا شفافية فيُملأ بلون «اللون 1» إن لم تختر خلفية.</p>
       <button class="btn block" id="resetBtn" style="margin-top:8px">إعادة ضبط الإعدادات</button>
+    </div>
+    <div class="sec" id="pickSec">
+      <h3>تحديد الآيات</h3>
+      <div id="selInfo"></div>
+      <div class="pickbar">
+        <button class="btn sm" id="selAll" type="button">الكل</button>
+        <button class="btn sm" id="selNone" type="button">لا شيء</button>
+        <button class="btn sm" id="selInv" type="button">عكس التحديد</button>
+      </div>
+      <div class="pickgrid" id="pickGrid"></div>
+      <label class="f" style="margin-top:10px">أو اكتب الأرقام
+        <div class="row"><input type="text" id="pickText" dir="ltr" placeholder="1-3, 5, 7-9"><button class="btn" id="pickApply" type="button" style="flex:0 0 auto">تطبيق</button></div>
+        <small>افصل بفاصلة، واستعمل شرطة للمدى. في القائمة المخصصة تعني الأرقام ترتيب الآية في القائمة.</small>
+      </label>
+      <p class="hint">اضغط رقمًا لتحديده، أو اسحب فوق عدة أرقام، أو اضغط Shift لتحديد مدى كامل. التحديد مرتبط ببطاقات الآيات، ويحكم تحميل ZIP والدمج والفيديو. إن لم تحدد شيئًا فتُعتمد كل الآيات.</p>
+    </div>
+
+    <div class="sec">
+      <h3>فيديو الآيات (آية بآية)</h3>
+      <label class="f">طريقة التصدير
+        <select id="vmode">
+          <option value="alpha" selected>شفاف بدون خلفية: لوحة + آية في ملف واحد</option>
+          <option value="direct">دمج مباشر (مع خلفيتك)</option>
+          <option value="two">شريطان: لوحة + نص (للمونتاج)</option>
+          <option value="strip">شريط واحد على أبيض (Darken)</option>
+        </select>
+        <small id="vmodeHelp"></small>
+      </label>
+      <div class="vgrid">
+        <label class="f">ثواني لكل آية
+          <input type="number" id="vdur" min="1.5" max="30" step="0.1" value="5.6">
+          <small>المدة الكاملة لمقطع الآية الواحدة، وتشمل التلاشي. مثلًا 5.6 تعني أن الآية تبقى 5.6 ثانية ثم تأتي التالية.</small>
+        </label>
+        <label class="f">زمن التلاشي (ث)
+          <input type="number" id="vfade" min="0" max="3" step="0.05" value="0.45">
+          <small>مدة ظهور الآية تدريجيًا في أول مقطعها واختفائها في آخره. تبدأ الآية التالية لحظة انتهاء السابقة، فلا فراغ بينهما. 0 يعني ظهورًا واختفاءً مفاجئًا.</small>
+        </label>
+        <label class="f">الإطارات في الثانية
+          <select id="vfps"><option value="60" selected>60</option><option value="30">30</option></select>
+          <small>60 أنعم حركة لكنها أثقل على جهازك أثناء التسجيل. 30 أخف. إن ظهر الفيديو متقطعًا فجرّب 30 أو مقاسًا أصغر.</small>
+        </label>
+        <label class="f">جودة الفيديو
+          <select id="vbr"><option value="12">عادية (12 ميغابت/ث)</option><option value="30" selected>عالية (30 ميغابت/ث)</option><option value="60">عالية جدًا (60 ميغابت/ث)</option></select>
+          <small>كلما ارتفعت زاد وضوح الحروف الدقيقة وزاد حجم الملف. إن رأيتَ الخطوط ضبابية أو متكسرة فارفعها.</small>
+        </label>
+        <label class="f">الترميز
+          <select id="vcodec"><option value="vp8" selected>VP8 (أسرع)</option><option value="vp9">VP9 (أوضح، أبطأ)</option></select>
+          <small>VP8 يسجّل بسلاسة على أغلب الأجهزة. VP9 أوضح بنفس الحجم لكنه يحتاج جهازًا قويًا وقد ينزل الإطارات. كلاهما يدعم الشفافية.</small>
+        </label>
+        <label class="f">شفافية اللوحة (0–255)
+          <input type="number" id="vpa" min="0" max="255" value="140">
+          <small>0 لوحة غير مرئية، و255 سوداء تمامًا. القيمة 140 تعادل نحو 55% عتمة.</small>
+        </label>
+        <label class="f">نعومة الحافة (px)
+          <input type="number" id="vpe" min="0" max="400" value="45">
+          <small>عرض تلاشي اللوحة عند الحواف بالبكسل. على هذه المسافة تتدرج اللوحة حتى تختفي تمامًا. 0 يعني حافة حادة.</small>
+        </label>
+      </div>
+      <div class="checks" style="grid-template-columns:1fr;margin-top:14px">
+        <label class="chk"><input type="checkbox" id="vpanel" checked><span>اللوحة السوداء خلف الآية<small>تظهر لوحة شبه شفافة تملأ الشاشة. إن ألغيتها بقي النص وحده.</small></span></label>
+        <label class="chk"><input type="checkbox" id="vbake" checked><span>إظهار التلاشي في أي مشغل<small>التلاشي في الوضع الشفاف يُخزَّن في قناة الشفافية، والمشغلات التي تتجاهل الشفافية تعرض الآية بلا تلاشٍ. هذا الخيار يُعتّم لون الآية مع الشفافية أثناء التلاشي، فيظهر التلاشي في كل المشغلات. في برامج المونتاج التي تقرأ الشفافية قد يبدو التلاشي أسرع قليلًا.</small></span></label>
+        <label class="chk"><input type="checkbox" id="vshadow"><span>ظل النص<small>ظل ناعم خلف الحروف. فوق اللوحة السوداء يبدو كأنه ضباب، لذلك هو مطفأ افتراضيًا.</small></span></label>
+      </div>
+      <label class="f" style="margin-top:14px">خلفية (فيديو أو صورة) للدمج المباشر
+        <input type="file" id="vbg" accept="video/*,image/*">
+        <small>تُستعمل في وضع «الدمج المباشر» فقط: تُركَّب اللوحة والآية فوقها. إن لم ترفع شيئًا فالخلفية سوداء. لا يُنقل صوت فيديو الخلفية.</small>
+      </label>
+      <button class="btn primary block" id="vidBtn" style="margin-top:14px">تصدير الفيديو</button>
+      <p class="hint">يُسجَّل الفيديو بزمن حقيقي، فأبقِ التبويب ظاهرًا أثناء التسجيل. المقاس الافتراضي 1920×1080 إن لم تختر مقاسًا من قسم المقاس. حدّد آيات بالفأرة أولًا، وإلا صُدِّرت كل الآيات.</p>
     </div>
   </aside>
 
@@ -302,9 +382,22 @@
   </section>
 </div>
 
+<dialog id="rateDlg"><form method="dialog">
+  <h3 style="margin:0 0 4px;color:var(--gold)">قيّم الأداة</h3>
+  <p style="margin:0 0 6px;font-size:13px;color:var(--mut)">رأيك يساعدنا على تحسينها.</p>
+  <div class="stars" id="stars"></div>
+  <textarea id="rateNote" rows="3" placeholder="ملاحظتك (اختياري)"></textarea>
+  <p id="rateMsg"></p>
+  <div class="row"><button class="btn primary" id="rateSend" type="button">إرسال التقييم</button><button class="btn" value="no">إغلاق</button></div>
+  <p class="hint" style="margin-top:12px"><a id="repoLink" href="#" target="_blank" rel="noopener" style="color:var(--gold)">أو ضع نجمة للمستودع على GitHub ⭐</a></p>
+</form></dialog>
+<dialog id="dlg"><form method="dialog"><p id="dlgMsg"></p><div class="row"><button class="btn primary" id="dlgYes" value="yes">نعم</button><button class="btn" value="no">إلغاء</button></div></form></dialog>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
+// رابط تنزيل نسخة ويندوز. ضع هنا رابط الملف على موقعك، أو اتركه اسم الملف إن رفعتَه بجانب هذه الصفحة. اتركه فارغًا لإخفاء الزر.
+const DOWNLOAD_URL = "ayah-studio-windows-kit.zip";
+const REPO_URL = "https://github.com/s-hero88/ayah_project";   // مستودع GitHub الذي تصله التقييمات
 const FAMILY = "QuranCustom";
 const FALLBACK = `"${FAMILY}","KFGQPC Uthmani Hafs","Amiri Quran","Scheherazade New","Traditional Arabic",serif`;
 let ARFONT = "Amiri Quran";
@@ -339,7 +432,18 @@ function setSel(i, on) {
   const c = document.querySelector(`#list .card[data-i="${i}"]`); if (c) c.classList.toggle("sel-on", on);
   updateSelInfo();
 }
+function buildPicker() {
+  const box = $("pickGrid"); box.innerHTML = "";
+  state.ayahs.forEach((a, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "pk" + (sel.has(i) ? " on" : ""); b.dataset.i = i;
+    b.textContent = state.custom ? `${a.s}:${a.n}` : String(a.n); box.append(b);
+  });
+}
 function updateSelInfo() {
+  document.querySelectorAll("#pickGrid .pk").forEach(b => b.classList.toggle("on", sel.has(+b.dataset.i)));
+  updateSelInfo0();
+}
+function updateSelInfo0() {
   const n = state.ayahs.length, k = [...sel].filter(i => i < n).length;
   $("selInfo").innerHTML = k ? `المحدد: <b>${k}</b> من ${n} آية` : `لم تحدد شيئًا، ستُعتمد كل الآيات (${n}).`;
 }
@@ -552,7 +656,7 @@ function rebuild() {
 }
 const refresh = debounce(rebuild, 200);
 function fillJump() {
-  const j = $("jump"); j.innerHTML = "";
+  buildPicker(); const j = $("jump"); j.innerHTML = "";
   state.ayahs.forEach((_, i) => { const o = document.createElement("option"); o.value = i; o.textContent = state.custom ? state.ayahs[i].s + ":" + state.ayahs[i].n : "الآية " + (i + 1); j.append(o); });
 }
 function go(d) { cur = (cur + d + state.ayahs.length) % state.ayahs.length; rebuild(); }
@@ -583,7 +687,7 @@ $("bgfile").addEventListener("change", e => {
 });
 
 /* ---------- حفظ الإعدادات ---------- */
-const KEEP = ["arSize","trSize","width","gold","refcol","showTr","showRef","showDiv","showShadow","numStyle","showNameAr","pvbg","scale","fontSel","preset","tpl","bgMode","bg1","bg2","trName","fmt","quality","vdur","cw","ch"];
+const KEEP = ["arSize","trSize","width","gold","refcol","showTr","showRef","showDiv","showShadow","numStyle","showNameAr","pvbg","scale","fontSel","preset","tpl","bgMode","bg1","bg2","trName","fmt","quality","vdur","cw","ch","vmode","vfade","vpa","vpe","vpanel","vfps","vshadow","vbr","vcodec","vbake"];
 function saveSet() { try { const o = {}; KEEP.forEach(id => { const e = $(id); o[id] = e.type === "checkbox" ? e.checked : e.value; }); localStorage.setItem("verseStudio", JSON.stringify(o)); } catch (e) {} }
 function loadSet() {
   try {
@@ -702,6 +806,34 @@ $("clearList").addEventListener("click", async () => {
   loadSurah(parseInt($("surah").value, 10));
 });
 $("selAll").addEventListener("click", () => { state.ayahs.forEach((_, i) => sel.add(i)); document.querySelectorAll("#list .card").forEach(c => c.classList.add("sel-on")); updateSelInfo(); });
+let pDrag = null;
+$("pickGrid").addEventListener("pointerdown", e => {
+  const b = e.target.closest(".pk"); if (!b || e.button > 0) return; e.preventDefault();
+  const i = +b.dataset.i;
+  if (e.shiftKey && lastPick != null) { for (let k = Math.min(lastPick, i); k <= Math.max(lastPick, i); k++) setSel(k, true); }
+  else { pDrag = !sel.has(i); setSel(i, pDrag); lastPick = i; }
+});
+$("pickGrid").addEventListener("pointerover", e => { if (pDrag === null) return; const b = e.target.closest(".pk"); if (b) setSel(+b.dataset.i, pDrag); });
+document.addEventListener("pointerup", () => { pDrag = null; });
+$("selInv").addEventListener("click", () => { state.ayahs.forEach((_, i) => setSel(i, !sel.has(i))); });
+function parsePick(txt, n) {
+  const out = new Set(), parts = toLat(txt).split(/[,،;\s]+/).filter(Boolean);
+  for (const p of parts) {
+    const m = p.match(/^(\d+)(?:-(\d+))?$/); if (!m) return null;
+    let a = +m[1], b = m[2] ? +m[2] : a; if (a > b) [a, b] = [b, a]; if (a < 1 || b > n) return null;
+    for (let k = a; k <= b; k++) out.add(k - 1);
+  }
+  return out;
+}
+function applyPick() {
+  const n = state.ayahs.length, txt = $("pickText").value.trim(), r = txt ? parsePick(txt, n) : new Set();
+  if (!r) { setStatus(`اكتب مثل 1-3, 5, 7-9 على ألا يتجاوز الرقم عدد الآيات (${n}).`); return; }
+  sel.clear(); r.forEach(i => sel.add(i)); lastPick = null;
+  document.querySelectorAll("#list .card").forEach(c => c.classList.toggle("sel-on", sel.has(+c.dataset.i)));
+  updateSelInfo(); setStatus(r.size ? `حُدِّدت ${r.size} آية.` : "أُلغي التحديد.");
+}
+$("pickApply").addEventListener("click", applyPick);
+$("pickText").addEventListener("keydown", e => { if (e.key === "Enter") applyPick(); });
 $("selNone").addEventListener("click", () => { sel.clear(); document.querySelectorAll("#list .card").forEach(c => c.classList.remove("sel-on")); updateSelInfo(); });
 
 /* ---------- المدى والدمج ---------- */
@@ -747,35 +879,104 @@ $("swapSize").addEventListener("click", () => {
 });
 
 /* ---------- فيديو ---------- */
+const VMODE_HELP = {
+  alpha: "ملف واحد فيه اللوحة والآية بشفافية حقيقية (بلا خلفية). ضعه فوق أي فيديو في برنامج يدعم WebM الشفاف، أو استعمله في OBS. بعض المشغلات تعرض الشفافية سوداء، وهذا طبيعي.",
+  direct: "تركّب الأداة خلفيتك (فيديو أو صورة) واللوحة والآية في ملف واحد جاهز. إن لم ترفع خلفية فالخلفية سوداء.",
+  two: "ملفان: اللوحة على أبيض (ادمجها في المونتاج بوضع Darken أو Multiply)، والنص على أسود (ادمجه بوضع Screen أو Lighten). مفيد إن كان برنامجك لا يقرأ شفافية WebM. الآيات في الملف الثاني.",
+  strip: "ملف واحد: لوحة رمادية ونص على أبيض لدمجه بوضع Darken. تنبيه: النص الذهبي الفاتح لا يظهر فوق الخلفيات الداكنة بهذا الوضع."
+};
+$("vmode").addEventListener("change", () => { $("vmodeHelp").textContent = VMODE_HELP[$("vmode").value]; });
+$("vmodeHelp").textContent = VMODE_HELP[$("vmode").value];
+const num = (id, d) => { const v = parseFloat($(id).value); return isFinite(v) ? v : d; };
+function makePanel(W, H, alpha, edge) {
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d"), im = x.createImageData(W, H), d = im.data;
+  for (let y = 0; y < H; y++) {
+    const dy = Math.min(y, H - 1 - y);
+    for (let xx = 0; xx < W; xx++) {
+      const dd = Math.min(dy, xx, W - 1 - xx), a = edge > 0 ? Math.min(1, dd / edge) : 1;
+      d[(y * W + xx) * 4 + 3] = Math.round(alpha * a);
+    }
+  }
+  x.putImageData(im, 0, 0); return c;
+}
+let vbgEl = null;
+$("vbg").addEventListener("change", e => {
+  const f = e.target.files[0]; vbgEl = null; if (!f) return;
+  const url = URL.createObjectURL(f);
+  if (f.type.startsWith("video")) {
+    const v = document.createElement("video"); v.src = url; v.muted = true; v.loop = true; v.playsInline = true;
+    v.onloadeddata = () => { vbgEl = v; setStatus("تم تحميل فيديو الخلفية."); }; v.load();
+  } else { const im = new Image(); im.onload = () => { vbgEl = im; setStatus("تم تحميل صورة الخلفية."); }; im.src = url; }
+});
+function drawCover(x, el, W, H) {
+  const sw = el.videoWidth || el.naturalWidth || el.width, sh = el.videoHeight || el.naturalHeight || el.height;
+  if (!sw || !sh) return; const r = Math.max(W / sw, H / sh), w = sw * r, h = sh * r; x.drawImage(el, (W - w) / 2, (H - h) / 2, w, h);
+}
 $("vidBtn").addEventListener("click", async e => {
   const btn = e.currentTarget, old = btn.textContent; btn.disabled = true;
   try {
     if (!window.MediaRecorder) throw new Error("المتصفح لا يدعم تسجيل الفيديو");
-    const base = opts(), W = base.H ? base.W : 1080, H = base.H || 1920;
-    const vk = Math.min(1, 1920 / Math.max(W, H)), VW = Math.round(W * vk), VH = Math.round(H * vk);
-    const o = { ...base, W, H, scale: vk, fmt: "png", bgMode: base.bgMode === "none" ? "color" : base.bgMode };
-    const idx = picked(), dur = Math.max(1, +$("vdur").value || 4), frames = [];
-    for (const i of idx) { btn.textContent = `تجهيز ${idx.indexOf(i) + 1}/${idx.length}`; const a = state.ayahs[i]; frames.push(await drawVerse(arOf(a), a.en, refOf(i), o, a.n, a.nameAr)); }
-    const mime = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm", "video/mp4"].find(t => MediaRecorder.isTypeSupported(t));
-    if (!mime) throw new Error("لا توجد صيغة فيديو مدعومة");
-    const V = document.createElement("canvas"); V.width = VW; V.height = VH; const x = V.getContext("2d");
-    x.fillStyle = "#000"; x.fillRect(0, 0, VW, VH);
-    const rec = new MediaRecorder(V.captureStream(30), { mimeType: mime, videoBitsPerSecond: 6e6 }), chunks = [];
-    rec.ondataavailable = ev => { if (ev.data.size) chunks.push(ev.data); };
-    const stopped = new Promise(r => rec.onstop = r);
-    const total = frames.length * dur, F = 0.5, t0 = performance.now(); rec.start();
+    const base = opts(), W0 = base.H ? base.W : 1920, H0 = base.H || 1080;
+    const vk = Math.min(1, 1920 / Math.max(W0, H0)), VW = Math.round(W0 * vk), VH = Math.round(H0 * vk);
+    const mode = $("vmode").value, idx = picked(), fps = +$("vfps").value || 60;
+    const dur = Math.max(1.5, num("vdur", 5.6)), F = Math.min(dur / 2, Math.max(0, num("vfade", 0.45)));
+    const pa = Math.min(255, Math.max(0, num("vpa", 140))), pe = Math.max(0, Math.round(num("vpe", 45) * vk)), usePanel = $("vpanel").checked;
+    const c8 = "video/webm;codecs=vp8", c9 = "video/webm;codecs=vp9", mimes = ($("vcodec").value === "vp9" ? [c9, c8] : [c8, c9]).concat(["video/webm"], mode === "alpha" ? [] : ["video/mp4"]);
+    const mime = mimes.find(t => MediaRecorder.isTypeSupported(t));
+    if (!mime) throw new Error(mode === "alpha" ? "هذا المتصفح لا يسجّل WebM بشفافية، جرّب Chrome أو Edge" : "لا توجد صيغة فيديو مدعومة");
+    const o = { ...base, W: W0, H: H0, scale: vk, fmt: "png", bgMode: "none", showShadow: $("vshadow").checked };
+    const panel = usePanel ? makePanel(VW, VH, pa, pe) : null, ready = new Map(), pend = new Map();
+    const build = async j => {                      // نرسم الآية التالية مسبقًا فقط، فلا تمتلئ الذاكرة مهما طالت السورة
+      const i = idx[j], a = state.ayahs[i], t = await drawVerse(arOf(a), a.en, refOf(i), o, a.n, a.nameAr);
+      if (mode === "two") return t;
+      const c = document.createElement("canvas"); c.width = VW; c.height = VH; const x = c.getContext("2d");
+      if (panel) x.drawImage(panel, 0, 0); x.drawImage(t, 0, 0, VW, VH); return c;
+    };
+    const want = j => { if (j >= 0 && j < idx.length && !pend.has(j)) pend.set(j, build(j).then(c => { ready.set(j, c); }).catch(err => { console.error("build", j, idx[j], err && err.stack); throw err; })); };
+    btn.textContent = "تجهيز…"; want(0); want(1); await pend.get(0);
+    const mk = () => {
+      const c = document.createElement("canvas"); c.width = VW; c.height = VH; const x = c.getContext("2d");
+      const rec = new MediaRecorder(c.captureStream(fps), { mimeType: mime, videoBitsPerSecond: (num("vbr", 30)) * 1e6 }), chunks = [];
+      rec.ondataavailable = ev => { if (ev.data.size) chunks.push(ev.data); };
+      return { c, x, rec, chunks, stopped: new Promise(r => rec.onstop = r) };
+    };
+    const A = mk(), B = mode === "two" ? mk() : null;
+    const bake = $("vbake").checked && mode === "alpha", T = bake ? (() => { const c = document.createElement("canvas"); c.width = VW; c.height = VH; return { c, x: c.getContext("2d") }; })() : null;
+    const fill = (x, col) => { x.globalAlpha = 1; x.fillStyle = col; x.fillRect(0, 0, VW, VH); };
+    const useBg = mode === "direct" && vbgEl && vbgEl.tagName === "VIDEO";
+    if (useBg) { vbgEl.currentTime = 0; await vbgEl.play(); }
+    const total = idx.length * dur, t0 = performance.now(); A.rec.start(); if (B) B.rec.start();
     await new Promise(res => {
       const tick = now => {
-        const t = (now - t0) / 1000; if (t >= total) { res(); return; }
-        const k = Math.floor(t / dur), l = t - k * dur, al = Math.max(0, Math.min(1, l / F, (dur - l) / F));
-        x.globalAlpha = 1; x.fillStyle = "#000"; x.fillRect(0, 0, VW, VH); x.globalAlpha = al; x.drawImage(frames[k], 0, 0, VW, VH); x.globalAlpha = 1;
-        btn.textContent = `تسجيل ${Math.ceil(total - t)}ث`; requestAnimationFrame(tick);
+        const t = Math.max(0, (now - t0) / 1000); if (t >= total + 0.3) { res(); return; }
+        const k = Math.min(idx.length - 1, Math.floor(t / dur)), l = t - k * dur;
+        const al = F > 0 ? Math.max(0, Math.min(1, l / F, (dur - l) / F)) : 1;
+        want(k); want(k + 1); for (const key of [...ready.keys()]) if (key < k - 1) { ready.delete(key); pend.delete(key); }
+        const cv = ready.get(k), put = (x, img) => { if (!img) return; x.globalAlpha = al; x.drawImage(img, 0, 0, VW, VH); x.globalAlpha = 1; };
+        if (mode === "alpha") {
+          A.x.clearRect(0, 0, VW, VH);
+          if (cv && bake && al < 1) {                 // نُعتّم ألوان الآية مع الشفافية ليظهر التلاشي حتى في المشغلات التي تتجاهل الشفافية
+            T.x.globalCompositeOperation = "copy"; T.x.globalAlpha = 1; T.x.drawImage(cv, 0, 0, VW, VH);
+            T.x.globalCompositeOperation = "source-atop"; T.x.globalAlpha = 1 - al; T.x.fillStyle = "#000"; T.x.fillRect(0, 0, VW, VH);
+            T.x.globalCompositeOperation = "source-over"; T.x.globalAlpha = 1; put(A.x, T.c);
+          } else put(A.x, cv);
+        }
+        else if (mode === "direct") { fill(A.x, "#000"); if (vbgEl) drawCover(A.x, vbgEl, VW, VH); put(A.x, cv); }
+        else if (mode === "strip") { fill(A.x, "#fff"); put(A.x, cv); }
+        else { fill(A.x, "#fff"); put(A.x, panel); fill(B.x, "#000"); put(B.x, cv); }
+        btn.textContent = `تسجيل ${Math.max(0, Math.ceil(total - t))}ث`; requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
     });
-    rec.stop(); await stopped;
-    saveBlob(new Blob(chunks, { type: mime.split(";")[0] }), `${state.custom ? "collection" : "surah-" + state.surah}-${idx[0] + 1}-${idx[idx.length - 1] + 1}.${mime.includes("mp4") ? "mp4" : "webm"}`);
-    setStatus("تم تصدير الفيديو.");
+    if (useBg) vbgEl.pause();
+    A.rec.stop(); if (B) B.rec.stop(); await A.stopped; if (B) await B.stopped;
+    const pre = `${state.custom ? "collection" : "surah-" + state.surah}-${idx[0] + 1}-${idx[idx.length - 1] + 1}`, isMp4 = mime.includes("mp4"), ex = isMp4 ? "mp4" : "webm", ty = mime.split(";")[0];
+    const fin = async c => new Blob(c, { type: ty });
+    if (mode === "two") {
+      saveBlob(await fin(A.chunks), `${pre}-1-panel-darken.${ex}`); setTimeout(async () => saveBlob(await fin(B.chunks), `${pre}-2-text-screen.${ex}`), 700);
+      setStatus("تم تصدير ملفين: اللوحة (Darken) والنص (Screen). إن لم يُنزَّل الثاني فاسمح للموقع بتنزيل عدة ملفات.");
+    } else { saveBlob(await fin(A.chunks), `${pre}-${mode}.${ex}`); setStatus("تم تصدير الفيديو."); }
   } catch (err) { setStatus("تعذر تصدير الفيديو: " + err.message); }
   finally { btn.disabled = false; btn.textContent = old; }
 });
@@ -825,8 +1026,29 @@ $("zipBtn").addEventListener("click", async () => {
   finally { btn.disabled = false; btn.textContent = label; }
 });
 
-loadSet(); syncSizeUI(); fillJump(); rebuild();
+(function () { const a = $("dlLink"); if (!DOWNLOAD_URL || /Electron/i.test(navigator.userAgent)) a.hidden = true; else a.href = DOWNLOAD_URL; })();
+/* ---------- التقييم ---------- */
+let rate = 0; try { rate = +localStorage.getItem("ayahRate") || 0; } catch (e) {}
+function paintStars(n) { document.querySelectorAll("#stars button").forEach((b, i) => b.classList.toggle("on", i < n)); }
+for (let i = 1; i <= 5; i++) {
+  const b = document.createElement("button"); b.type = "button"; b.textContent = "★"; b.setAttribute("aria-label", i + " / 5");
+  b.addEventListener("click", () => { rate = i; paintStars(i); $("rateMsg").textContent = ""; });
+  b.addEventListener("mouseenter", () => paintStars(i)); $("stars").append(b);
+}
+$("stars").addEventListener("mouseleave", () => paintStars(rate));
+$("repoLink").href = REPO_URL;
+$("rateBtn").addEventListener("click", () => { paintStars(rate); $("rateMsg").textContent = rate ? `تقييمك السابق: ${rate}/5` : ""; $("rateDlg").showModal(); });
+$("rateSend").addEventListener("click", () => {
+  if (!rate) { $("rateMsg").textContent = "اختر عدد النجوم أولًا."; return; }
+  try { localStorage.setItem("ayahRate", String(rate)); } catch (e) {}
+  const note = $("rateNote").value.trim();
+  const title = encodeURIComponent(`تقييم: ${"★".repeat(rate)}${"☆".repeat(5 - rate)} (${rate}/5)`);
+  const body = encodeURIComponent(`التقييم: ${rate}/5\n\n${note}`);
+  window.open(`${REPO_URL}/issues/new?title=${title}&body=${body}`, "_blank", "noopener");
+  $("rateMsg").textContent = "شكرًا لك! فُتحت صفحة GitHub، اضغط Submit new issue هناك لإرسال تقييمك.";
+  setTimeout(() => $("rateDlg").close(), 2500);
+});
+loadSet(); $("vmode").dispatchEvent(new Event("change")); syncSizeUI(); fillJump(); rebuild();
 </script>
-<dialog id="dlg"><form method="dialog"><p id="dlgMsg"></p><div class="row"><button class="btn primary" id="dlgYes" value="yes">نعم</button><button class="btn" value="no">إلغاء</button></div></form></dialog>
 </body>
 </html>
